@@ -1,0 +1,46 @@
+@page "/admin/admins"
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Components.Forms
+@inject IDbContextFactory<ClinicContext> dbs
+
+<PageTitle>Admins</PageTitle>
+
+<h1>Admins</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Admin ID</th>
+            <th>Person ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var admin in admins)
+        {
+            <tr>
+                <td>@admin.Id</td>
+                <td>@admin.Person!.Id</td>
+                <td>@admin.Person!.FirstName</td>
+                <td>@admin.Person!.LastName</td>
+                <td>@admin.Person!.Email</td>
+                <td>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@code {
+    private List<AdminUser> admins = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var db = dbs.CreateDbContext();
+        admins = await db.AdminUser.Include(a => a.Person).ToListAsync();
+    }
+}

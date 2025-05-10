@@ -1,0 +1,6 @@
+[
+  {
+    "type": "sqlite",
+    "path": "/Users/dawid/Desktop/warsztaty_blazor/database.db"
+  }
+]

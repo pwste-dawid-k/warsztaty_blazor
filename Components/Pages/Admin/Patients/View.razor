@@ -1,0 +1,70 @@
+@page "/admin/patients"
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Components.Forms
+@inject IDbContextFactory<ClinicContext> dbs
+
+<PageTitle>Patients</PageTitle>
+
+<h1>Patients</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Patient ID</th>
+            <th>Person ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Insurance Provider</th>
+            <th>Insurance Number</th>
+            <th>Insurance Expiration Date</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Zip Code</th>
+            <th>Country</th>
+            <th>Gender</th>
+            <th>Date of Birth</th>
+            <th>Notes</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var patient in patients)
+        {
+            <tr>
+                <td>@patient.Id</td>
+                <td>@patient.Person!.Id</td>
+                <td>@patient.Person!.FirstName</td>
+                <td>@patient.Person!.LastName</td>
+                <td>@patient.InsuranceProvider</td>
+                <td>@patient.InsuranceNumber</td>
+                <td>@patient.InsuranceExpirationDate</td>
+                <td>@patient.Person!.Email</td>
+                <td>@patient.Person!.Phone</td>
+                <td>@patient.Person!.Address</td>
+                <td>@patient.Person!.City</td>
+                <td>@patient.Person!.State</td>
+                <td>@patient.Person!.ZipCode</td>
+                <td>@patient.Person!.Country</td>
+                <td>@patient.Person!.Gender</td>
+                <td>@patient.Person!.DateOfBirth</td>
+                <td>@patient.Person!.Notes</td>
+                <td>
+                    <a href="/admin/patients/edit/@patient.Id">Edit</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<Patient> patients = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var db = dbs.CreateDbContext();
+        patients = await db.Patient.Include(p => p.Person).ToListAsync();
+    }
+}

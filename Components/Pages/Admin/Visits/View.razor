@@ -1,0 +1,51 @@
+@page "/admin/visits"
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Components.Forms
+@inject IDbContextFactory<ClinicContext> dbs
+
+<PageTitle>Visits</PageTitle>
+
+<h1>Visits</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Visit ID</th>
+            <th>Patient ID</th>
+            <th>Doctor ID</th>
+            <th>Date</th>
+            <th>Reason</th>
+            <th>Diagnosis</th>
+            <th>Treatment</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var visit in visits)
+        {
+            <tr>
+                <td>@visit.Id</td>
+                <td>@visit.Patient!.Id</td>
+                <td>@visit.Doctor!.Id</td>
+                <td>@visit.DateTime</td>
+                <td>@visit.Reason</td>
+                <td>@visit.Diagnosis</td>
+                <td>@visit.Treatment</td>
+                <td>
+                    <a href="/admin/visits/edit/@visit.Id">Edit</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@code {
+    private List<Visit> visits = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var db = dbs.CreateDbContext();
+        visits = await db.Visit.Include(v => v.Patient).Include(v => v.Doctor).ToListAsync();
+    }
+}

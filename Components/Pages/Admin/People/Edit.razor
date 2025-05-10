@@ -1,0 +1,114 @@
+@page "/admin/people/edit/{id}"
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Components.Forms
+@inject IDbContextFactory<ClinicContext> dbs
+@inject NavigationManager Navigation
+
+@if (Person == null)
+{
+        <PageTitle>Person Not Found</PageTitle>
+        <h1>Person Not Found</h1>
+        <p>Person not found.</p>
+        <button @onclick="@(() => Navigation.NavigateTo("/admin/people"))">Back to List</button>
+}
+else
+{
+        <PageTitle>People: Edit #@Person.Id @Person.FirstName @Person.LastName</PageTitle>
+        <h1>People: Edit #@Person.Id @Person.FirstName @Person.LastName</h1>
+        <form method="post" @onsubmit="Submit" @formname="starship-plain-form">
+            @* <AntiforgeryToken /> *@
+            <div>
+                <label>
+                    First Name:
+                    <InputText @bind-Value="Person.FirstName" />
+                </label>
+            </div>
+            <div>
+                <label>
+                    Last Name:
+                    <InputText @bind-Value="Person.LastName" />
+                </label>
+            </div>
+            <div>
+                <label>
+                    Email:
+                    <InputText @bind-Value="Person.Email" />
+                </label>
+            </div>
+            <div>
+                <label>
+                    Phone:
+                    <InputText @bind-Value="Person.Phone" />
+                </label>
+            </div>
+            <div>
+                <label>
+                    Address:
+                    <InputText @bind-Value="Person.Address" />
+                </label>
+            </div>
+            <div>
+                <label>
+                    City:
+                    <InputText @bind-Value="Person.City" />
+                </label>
+            </div>
+            <div>
+                <label>
+                    Zip Code:
+                    <InputText @bind-Value="Person.ZipCode" />
+                </label>
+            </div>
+            <div>
+                <label>
+                    Country:
+                    <InputText @bind-Value="Person.Country" />
+                </label>
+            </div>
+            <div>
+                <label>
+                    Date of Birth:
+                    <InputDate @bind-Value="Person.DateOfBirth" />
+                </label>
+            </div>
+            <div>
+                <label>
+                    Gender:
+                    <InputSelect @bind-Value="Person.Gender">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </InputSelect>
+                </label>
+            </div>
+            <div>
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+}
+
+@code {
+    private Person? Person = null;
+
+    [Parameter]
+    required public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (int.TryParse(Id, out var personId))
+        {
+            using var db = dbs.CreateDbContext();
+            Person = await db.Person.FirstOrDefaultAsync(p => p.Id == personId);
+        }
+    }
+
+    private async Task Submit()
+    {
+        if (Person != null)
+        {
+            using var db = dbs.CreateDbContext();
+            db.Person.Update(Person);
+            await db.SaveChangesAsync();
+            Navigation.NavigateTo("/admin/people");
+        }
+    }
+}
